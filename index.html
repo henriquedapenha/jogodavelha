@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da velha</title>    
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+   <link rel="stylesheet" href="css/styles.css">
+   <script src="js/scripts.js"></script>
+</head>
+<body>
+    <button onclick="reiniciarJogo()">Reiniciar Jogo</button>
+    <div id="container">
+        <table id="tabuleiro">
+            <tr>
+                <td onclick="selecionado(this)"></td>
+                <td onclick="selecionado(this)"></td>
+                <td onclick="selecionado(this)"></td>
+            </tr>
+            <tr>
+                <td onclick="selecionado(this)"></td>
+                <td onclick="selecionado(this)"></td>
+                <td onclick="selecionado(this)"></td>
+            </tr>
+            <tr>
+                <td onclick="selecionado(this)"></td>
+                <td onclick="selecionado(this)"></td>
+                <td onclick="selecionado(this)"></td>
+            </tr>
+        </table><canvas id="myCanvas" width="405" height="405" style="border:1px solid grey;"></canvas>
+    
+    </div>
+    <script>
+        var jogadorVez = 'X'; 
+        var vencedor = '';
+        var disponiveis = 9;
+        var fimDoJogo = false;
+        var regras = Array();
+        var tds = tabuleiro.getElementsByTagName('td');
+        function selecionado(elemento){
+            myCanvas.style.zIndex = 0;
+            if (fimDoJogo || disponiveis <= 0){
+                alert('fim do jogo')
+                return ;
+            }
+                
+            if(elemento.textContent == 'X' || elemento.textContent == 'O'){
+                alert('escolha outro')
+            } else {
+                elemento.textContent = jogadorVez;
+                disponiveis--;
+
+                if(jogadorVez == 'X'){
+                    jogadorVez = 'O';
+                } else {
+                    jogadorVez = 'X';
+                }
+               if(!fimDoJogo){
+                setTimeout(() => {
+                    validaVencedor();    
+                }, 500);               }                
+                
+            }        
+        }
+        function validaVencedor(){  
+            if(disponiveis == 0 ){
+                fimDoJogo = true;
+            }  
+            
+                regras = Array();
+               //regras de vitoria
+               //horizontais
+               regras.push(tds[0].textContent + tds[1].textContent +tds[2].textContent);
+               regras.push(tds[3].textContent + tds[4].textContent +tds[5].textContent);
+               regras.push(tds[6].textContent + tds[7].textContent +tds[8].textContent);
+               
+               //diagonais
+               regras.push(tds[0].textContent + tds[4].textContent +tds[8].textContent);
+               regras.push(tds[2].textContent + tds[4].textContent +tds[6].textContent);
+               
+               //verticais
+               regras.push(tds[0].textContent + tds[3].textContent +tds[6].textContent);
+               regras.push(tds[1].textContent + tds[4].textContent +tds[7].textContent);
+               regras.push(tds[2].textContent + tds[5].textContent +tds[8].textContent);
+            
+               var arr = Array.prototype.slice.call( tds );
+               function velha(e){
+                    if(e.textContent == ''){
+                        return true
+                    }
+                }                
+
+               if(regras.find(elemento => elemento == 'XXX') != undefined){
+                
+                fimDoJogo = true;
+                vencedor = "X";
+                desenhar(regras.indexOf('XXX'));
+                return false;
+                
+               } else if(regras.find(elemento => elemento == 'OOO') != undefined){
+                fimDoJogo = true;
+                vencedor = "BOLA (O)";        
+                desenhar(regras.indexOf('OOO'));        
+                return false;
+                
+               } else if(arr.find(velha) == undefined){
+                fimDoJogo = true;
+                alert ('Deu velha!');
+                reiniciarJogo();
+               }
+
+               function posicoes(posicao){
+                const objetoPosicoes = {
+                    HE : 0,
+                    VE : (tabuleiro.clientHeight/6),
+                    HD : 405,
+                    VD : (tabuleiro.clientHeight/6)
+                };
+                
+                switch (posicao) {
+                    case 1:                    
+                    objetoPosicoes.VE = (tabuleiro.clientHeight/2);
+                    objetoPosicoes.VD = (tabuleiro.clientHeight/2);
+                        break;
+                    
+                    case 2:                    
+                    objetoPosicoes.VE = (tabuleiro.clientHeight/3*2.5);
+                    objetoPosicoes.VD = (tabuleiro.clientHeight/3*2.5);
+                        break;
+                    case 3:                    
+                    objetoPosicoes.VE = 0;
+                    objetoPosicoes.VD = tabuleiro.clientHeight;
+                        break;
+                    case 4:                    
+                    objetoPosicoes.VD = 0;
+                    objetoPosicoes.VE = tabuleiro.clientHeight;
+                        break;
+                    
+                    case 5:                    
+                    objetoPosicoes.VE = 0;
+                    objetoPosicoes.VD = (tabuleiro.clientHeight);
+                    objetoPosicoes.HE = (tabuleiro.clientHeight/6);
+                    objetoPosicoes.HD = (tabuleiro.clientHeight/6);
+                        break;
+                    case 6:        
+                    objetoPosicoes.VE = 0;
+                    objetoPosicoes.VD = (tabuleiro.clientHeight);            
+                    objetoPosicoes.HE = (tabuleiro.clientHeight/2);
+                    objetoPosicoes.HD = (tabuleiro.clientHeight/2);
+                        break;
+                    case 7:  
+                    objetoPosicoes.VE = 0;
+                    objetoPosicoes.VD = (tabuleiro.clientHeight);                  
+                    objetoPosicoes.HE = (tabuleiro.clientHeight/3*2.5);
+                    objetoPosicoes.HD = (tabuleiro.clientHeight/3*2.5);
+                        
+                        break;
+                    default:
+                        break;
+                }
+                    
+
+                return objetoPosicoes;
+               }
+               function desenhar(posicao){                
+                    const {HE, VE, HD,VD} = posicoes(posicao);
+
+                    // Create a canvas:
+                    const canvas = document.getElementById("myCanvas");
+                    const ctx = canvas.getContext("2d");
+
+                    // Define a new path:
+                    ctx.beginPath();
+
+
+                    ctx.moveTo(HE,VE);
+
+                    // Define an end point
+                    ctx.lineTo(HD, VD);
+
+                    // Draw it
+                    ctx.stroke();
+                    alerta.textContent =`O vencedor é o: ${vencedor}`;
+               }
+
+               myCanvas.style.zIndex = -88888888;
+        }
+
+        function limparCanvas() {
+            ctx = myCanvas.getContext("2d");
+            ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+        }
+
+        function limparTabuleiro(){
+            for (let index = 0; index < tds.length; index++) { 
+                    tds[index].textContent = '';
+                }
+        }
+    
+        function reiniciarJogo(){
+            var text = 'Deseja Reiniciar o jogo?';
+            if(confirm(text) == true){
+                myCanvas.style.zIndex =-888888;
+                regras = Array();
+                jogadorVez = 'X'; 
+                disponiveis = 9;
+                fimDoJogo = false;
+                limparCanvas();
+                limparTabuleiro();
+            }            
+        }
+    </script>
+
+    <h2 id="alerta"></h2>
+</body>
+</html>
