@@ -1,0 +1,19 @@
+table td {
+    border: 1px solid gray; 
+    width: 130px;
+    height: 130px; 
+    text-align: center; 
+    cursor: pointer;
+    font-family: 'arial black';
+}
+#myCanvas{
+    width: 405px;
+    height: 405px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -9999;
+}
+div#container {
+    position: relative;
+}
